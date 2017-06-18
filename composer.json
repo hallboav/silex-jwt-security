@@ -1,0 +1,34 @@
+{
+    "name": "hallboav/silex-jwt-security",
+    "description": "JSON web token security provider for Silex 2.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Hallison Boaventura",
+            "email": "hallisonboaventura@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Hallboav\\": "src"
+        },
+        "exclude-from-classmap": [
+            "tests"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Hallboav\\Tests\\": "tests"
+        }
+    },
+    "require": {
+        "php": ">=5.5.9",
+        "silex/silex": "^2.1",
+        "lcobucci/jwt": "^3.2",
+        "symfony/security": "^3.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.2"
+    }
+}
