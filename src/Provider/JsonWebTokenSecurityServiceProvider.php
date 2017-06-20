@@ -22,6 +22,10 @@ class JsonWebTokenSecurityServiceProvider implements ServiceProviderInterface
             return new LcobucciJwt\Signer\Hmac\Sha256();
         };
 
+        $container['security.jwt.signer.sha512'] = function () {
+            return new LcobucciJwt\Signer\Hmac\Sha512();
+        };
+
         $container['security.jwt.default_signer'] = function ($container) {
             return $container['security.jwt.signer.sha256'];
         };
