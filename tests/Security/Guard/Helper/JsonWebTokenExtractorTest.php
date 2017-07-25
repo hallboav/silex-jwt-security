@@ -17,13 +17,13 @@ class JsonWebTokenExtractorTest extends TestCase
     {
         $this->extractor = new JsonWebTokenExtractor(
             new LcobucciJwt\Parser(),
-            JsonWebTokenSecurityServiceProvider::AUTH_HEADER_NAME
+            JsonWebTokenSecurityServiceProvider::AUTHORIZATION_HEADER
         );
     }
 
     private function setHeader($value)
     {
-        $header = str_replace('-', '_', $this->extractor->getHeaderName());
+        $header = str_replace('-', '_', $this->extractor->getAuthorizationHeader());
         $_SERVER['HTTP_' . strtoupper($header)] = $value;
     }
 

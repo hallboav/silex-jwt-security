@@ -15,19 +15,19 @@ use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 
 class JsonWebTokenGuardAuthenticator extends AbstractGuardAuthenticator
 {
-    private $tokenExtractor;
+    private $extractor;
     private $constraint;
     private $signer;
     private $secret;
     private $token;
 
     public function __construct(
-        JsonWebTokenExtractor $tokenExtractor,
+        JsonWebTokenExtractor $extractor,
         JsonWebToken\ValidationData $constraint,
         JsonWebToken\Signer $signer,
         $secret
     ) {
-        $this->tokenExtractor = $tokenExtractor;
+        $this->extractor = $extractor;
         $this->constraint = $constraint;
         $this->signer = $signer;
         $this->secret = $secret;
@@ -80,7 +80,7 @@ class JsonWebTokenGuardAuthenticator extends AbstractGuardAuthenticator
     private function getToken(Request $request)
     {
         if (is_null($this->token)) {
-            $this->token = $this->tokenExtractor->extract($request);
+            $this->token = $this->extractor->extract($request);
         }
 
         return $this->token;

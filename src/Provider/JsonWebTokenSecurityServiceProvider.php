@@ -10,55 +10,55 @@ use Pimple\ServiceProviderInterface;
 
 class JsonWebTokenSecurityServiceProvider implements ServiceProviderInterface
 {
-    const AUTH_HEADER_NAME = 'Authorization';
+    const AUTHORIZATION_HEADER = 'Authorization';
 
-    public function register(Container $container)
+    public function register(Container $app)
     {
-        $container['security.jwt.secret'] = md5(__DIR__);
-        $container['security.jwt.auth_header_name'] = self::AUTH_HEADER_NAME;
-        $container['security.jwt.validation.current_time'] = null;
+        $app['security.jwt.secret'] = md5(__DIR__);
+        $app['security.jwt.authorization_header'] = self::AUTHORIZATION_HEADER;
+        $app['security.jwt.validation.current_time'] = null;
 
-        $container['security.jwt.signer.sha256'] = function () {
+        $app['security.jwt.signer.sha256'] = function () {
             return new LcobucciJwt\Signer\Hmac\Sha256();
         };
 
-        $container['security.jwt.signer.sha512'] = function () {
+        $app['security.jwt.signer.sha512'] = function () {
             return new LcobucciJwt\Signer\Hmac\Sha512();
         };
 
-        $container['security.jwt.default_signer'] = function ($container) {
-            return $container['security.jwt.signer.sha256'];
+        $app['security.jwt.default_signer'] = function ($app) {
+            return $app['security.jwt.signer.sha256'];
         };
 
-        $container['security.jwt.builder'] = function () {
+        $app['security.jwt.builder'] = function () {
             return new LcobucciJwt\Builder();
         };
 
-        $container['security.jwt.parser'] = function () {
+        $app['security.jwt.parser'] = function () {
             return new LcobucciJwt\Parser();
         };
 
-        $container['security.jwt.validation'] = $container->factory(function ($container) {
-            return new LcobucciJwt\ValidationData($container['security.jwt.validation.current_time']);
+        $app['security.jwt.validation'] = $app->factory(function ($app) {
+            return new LcobucciJwt\ValidationData($app['security.jwt.validation.current_time']);
         });
 
-        $container['security.jwt.user_provider'] = function ($container) {
+        $app['security.jwt.user_provider'] = function ($app) {
             return new JsonWebTokenUserProvider();
         };
 
-        $container['security.jwt.guard_authenticator'] = function ($container) {
+        $app['security.jwt.guard_authenticator'] = function ($app) {
             return new JsonWebTokenGuardAuthenticator(
-                $container['security.jwt.extractor'],
-                $container['security.jwt.validation'],
-                $container['security.jwt.default_signer'],
-                $container['security.jwt.secret']
+                $app['security.jwt.extractor'],
+                $app['security.jwt.validation'],
+                $app['security.jwt.default_signer'],
+                $app['security.jwt.secret']
             );
         };
 
-        $container['security.jwt.extractor'] = function ($container) {
+        $app['security.jwt.extractor'] = function ($app) {
             return new JsonWebTokenExtractor(
-                $container['security.jwt.parser'],
-                $container['security.jwt.auth_header_name']
+                $app['security.jwt.parser'],
+                $app['security.jwt.authorization_header']
             );
         };
     }

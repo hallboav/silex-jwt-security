@@ -10,12 +10,12 @@ class JsonWebTokenExtractor
     const BEARER_PREFIX = 'Bearer';
 
     private $parser;
-    private $header;
+    private $authorizationHeader;
 
-    public function __construct(LcobucciJwt\Parser $parser, $header)
+    public function __construct(LcobucciJwt\Parser $parser, $authorizationHeader)
     {
         $this->parser = $parser;
-        $this->header = $header;
+        $this->authorizationHeader = $authorizationHeader;
     }
 
     private function stripTokenPrefix($token, $prefix = self::BEARER_PREFIX)
@@ -30,7 +30,7 @@ class JsonWebTokenExtractor
 
     public function extract(Request $request, $prefix = self::BEARER_PREFIX)
     {
-        if (!$token = $request->headers->get($this->header)) {
+        if (!$token = $request->headers->get($this->authorizationHeader)) {
             throw $this->createAccessDeniedHttpException('Missing authorization header.');
         }
 
@@ -38,9 +38,9 @@ class JsonWebTokenExtractor
         return $this->parser->parse($strippedToken);
     }
 
-    public function getHeaderName()
+    public function getAuthorizationHeader()
     {
-        return $this->header;
+        return $this->authorizationHeader;
     }
 
     private function createAccessDeniedHttpException($message = null)
