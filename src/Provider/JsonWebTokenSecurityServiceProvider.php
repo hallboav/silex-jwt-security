@@ -16,7 +16,6 @@ class JsonWebTokenSecurityServiceProvider implements ServiceProviderInterface
     {
         $app['security.jwt.secret'] = md5(__DIR__);
         $app['security.jwt.authorization_header'] = self::AUTHORIZATION_HEADER;
-        $app['security.jwt.validation.current_time'] = null;
         $app['security.jwt.user_provider.username_parameter'] = 'username';
         $app['security.jwt.user_provider.roles_parameter'] = 'roles';
 
@@ -40,8 +39,8 @@ class JsonWebTokenSecurityServiceProvider implements ServiceProviderInterface
             return new LcobucciJwt\Parser();
         };
 
-        $app['security.jwt.validation'] = $app->factory(function ($app) {
-            return new LcobucciJwt\ValidationData($app['security.jwt.validation.current_time']);
+        $app['security.jwt.validation'] = $app->protect(function ($currentTime = null) {
+            return new LcobucciJwt\ValidationData($currentTime);
         });
 
         $app['security.jwt.user_provider'] = function ($app) {
@@ -52,13 +51,17 @@ class JsonWebTokenSecurityServiceProvider implements ServiceProviderInterface
         };
 
         $app['security.jwt.guard_authenticator'] = function ($app) {
+            return $app['security.jwt.guard_authenticator_callable']();
+        };
+
+        $app['security.jwt.guard_authenticator_callable'] = $app->protect(function ($currentTime = null) use ($app) {
             return new JsonWebTokenGuardAuthenticator(
                 $app['security.jwt.extractor'],
-                $app['security.jwt.validation'],
+                $app['security.jwt.validation']($currentTime),
                 $app['security.jwt.default_signer'],
                 $app['security.jwt.secret']
             );
-        };
+        });
 
         $app['security.jwt.extractor'] = function ($app) {
             return new JsonWebTokenExtractor(
