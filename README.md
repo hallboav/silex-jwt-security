@@ -1,5 +1,11 @@
 # Silex JWT Security Service Provider
 
+### Install
+
+```shell
+composer require hallboav/silex-jwt-security
+```
+
 ### Usage
 
 #### Set up JSON web token application (which extends Application class from Silex)
