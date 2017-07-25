@@ -3,7 +3,6 @@ namespace Hallboav\Security\Guard\Helper;
 
 use Lcobucci\JWT as LcobucciJwt;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class JsonWebTokenExtractor
 {
@@ -18,7 +17,7 @@ class JsonWebTokenExtractor
         $this->authorizationHeader = $authorizationHeader;
     }
 
-    private function stripTokenPrefix($token, $prefix = self::BEARER_PREFIX)
+    private function stripTokenPrefix($token, $prefix)
     {
         $len = strlen($prefix);
         if ($prefix === substr($token, 0, $len)) {
@@ -30,11 +29,11 @@ class JsonWebTokenExtractor
 
     public function extract(Request $request, $prefix = self::BEARER_PREFIX)
     {
-        if (!$token = $request->headers->get($this->authorizationHeader)) {
-            throw $this->createAccessDeniedHttpException('Missing authorization header.');
+        if (null === $token = $request->headers->get($this->authorizationHeader)) {
+            return;
         }
 
-        $strippedToken = $this->stripTokenPrefix($token);
+        $strippedToken = $this->stripTokenPrefix($token, $prefix);
         return $this->parser->parse($strippedToken);
     }
 
@@ -43,8 +42,4 @@ class JsonWebTokenExtractor
         return $this->authorizationHeader;
     }
 
-    private function createAccessDeniedHttpException($message = null)
-    {
-        return new AccessDeniedHttpException($message);
-    }
 }

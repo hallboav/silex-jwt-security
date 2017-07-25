@@ -20,23 +20,26 @@ class JsonWebTokenGuardAuthenticator extends AbstractGuardAuthenticator
     private $signer;
     private $secret;
     private $token;
+    private $prefix;
 
     public function __construct(
         JsonWebTokenExtractor $extractor,
         JsonWebToken\ValidationData $constraint,
         JsonWebToken\Signer $signer,
-        $secret
+        $secret,
+        $prefix = JsonWebTokenExtractor::BEARER_PREFIX
     ) {
         $this->extractor = $extractor;
         $this->constraint = $constraint;
         $this->signer = $signer;
         $this->secret = $secret;
         $this->token = null;
+        $this->prefix = $prefix;
     }
 
     public function getCredentials(Request $request)
     {
-        return $this->getToken($request);
+        return $this->token = $this->extractor->extract($request, $this->prefix);
     }
 
     public function getUser($credentials, UserProviderInterface $userProvider)
@@ -64,7 +67,7 @@ class JsonWebTokenGuardAuthenticator extends AbstractGuardAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
-        $token->setAttribute('security.jwt.token', $this->getToken($request));
+        $token->setAttribute('security.jwt.token', $this->token);
     }
 
     public function start(Request $request, AuthenticationException $authException = null)
@@ -75,15 +78,6 @@ class JsonWebTokenGuardAuthenticator extends AbstractGuardAuthenticator
     public function supportsRememberMe()
     {
         return false;
-    }
-
-    private function getToken(Request $request)
-    {
-        if (is_null($this->token)) {
-            $this->token = $this->extractor->extract($request);
-        }
-
-        return $this->token;
     }
 
     private function createAccessDeniedHttpException($message = null)
