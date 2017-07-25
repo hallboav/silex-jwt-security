@@ -17,6 +17,8 @@ class JsonWebTokenSecurityServiceProvider implements ServiceProviderInterface
         $app['security.jwt.secret'] = md5(__DIR__);
         $app['security.jwt.authorization_header'] = self::AUTHORIZATION_HEADER;
         $app['security.jwt.validation.current_time'] = null;
+        $app['security.jwt.user_provider.username_parameter'] = 'username';
+        $app['security.jwt.user_provider.roles_parameter'] = 'roles';
 
         $app['security.jwt.signer.sha256'] = function () {
             return new LcobucciJwt\Signer\Hmac\Sha256();
@@ -43,7 +45,10 @@ class JsonWebTokenSecurityServiceProvider implements ServiceProviderInterface
         });
 
         $app['security.jwt.user_provider'] = function ($app) {
-            return new JsonWebTokenUserProvider();
+            return new JsonWebTokenUserProvider([
+                'username_parameter' => $app['security.jwt.user_provider.username_parameter'],
+                'roles_parameter' => $app['security.jwt.user_provider.roles_parameter']
+            ]);
         };
 
         $app['security.jwt.guard_authenticator'] = function ($app) {
