@@ -42,4 +42,8 @@ class JsonWebTokenExtractor
         return $this->authorizationHeader;
     }
 
+    public function setAuthorizationHeader($authorizationHeader)
+    {
+        $this->authorizationHeader = $authorizationHeader;
+    }
 }

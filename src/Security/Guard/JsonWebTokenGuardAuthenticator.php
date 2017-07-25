@@ -80,6 +80,11 @@ class JsonWebTokenGuardAuthenticator extends AbstractGuardAuthenticator
         return false;
     }
 
+    public function getTokenExtractor()
+    {
+        return $this->extractor;
+    }
+
     private function createAccessDeniedHttpException($message = null)
     {
         return new AccessDeniedHttpException($message);
